@@ -9,13 +9,25 @@ console = Console()
 
 
 @app.command('imdb')
-def test_with_imdb():
+def test_with_imdb(model : str = "baseline",
+                   sample_size : int = 1000,
+                   embedding_dim : int = 50,
+                   hidden_dim : int = 50,
+                   n_hidden_layers : int = 1,
+                   ):
     """
     Test baseline model with imdb
     """
-    dataset_train, dataset_test, tokenizer = nlp.get_imdb_dataset()
+    dataset_train, dataset_test, tokenizer = nlp.get_imdb_dataset(sample_size=sample_size)
     vocab_size = tokenizer.vocab_size
-    model = nlp.MyClassifier(vocab_size=vocab_size, embedding_dim=50, output_dim=1)
+
+    if model == "baseline":
+        model = nlp.MyClassifier(vocab_size=vocab_size, embedding_dim=embedding_dim, output_dim=1)
+    elif model == "mlp":
+        model = nlp.MyNetwork(vocab_size=vocab_size, embedding_dim=embedding_dim, hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers, output_dim=1)
+    elif model == "resmlp":
+        model = nlp.MyNetwork(vocab_size=vocab_size, embedding_dim=embedding_dim, hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers, output_dim=1)
+
     model, losses = nlp.train_binary_model(model, dataset_train)
     console.print("Training finished")
     console.print(f"Loss: {losses[-1]}")
