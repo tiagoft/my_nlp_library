@@ -21,7 +21,7 @@ class TextDataset(Dataset):
         label = self.labels[idx]
         tokens = self.tokenizer(text)
         x = torch.tensor(tokens)
-        y = torch.tensor(label).reshape(1).clone().detach()
+        y = label.clone().detach().reshape(1)
         return x, y
     
 def get_imdb_dataset(target_url : str='https://raw.githubusercontent.com/tiagoft/NLP/refs/heads/main/Aulas/datasets/IMDB%20Dataset.csv',
@@ -29,7 +29,7 @@ def get_imdb_dataset(target_url : str='https://raw.githubusercontent.com/tiagoft
                        sample_size : int=None):
     cachedir = Path (os.path.expanduser('~/.my_nlp_library'))
     local_file_path = cachedir / 'IMDB_Dataset.csv'
-    
+
     if not os.path.exists(cachedir):
         os.makedirs(cachedir)
     
