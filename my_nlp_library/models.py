@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+import my_nlp_library as nlp
 class MyClassifier( nn.Module ):
     def __init__(self, vocab_size, embedding_dim, output_dim, n_special_tokens=2):
         super(MyClassifier, self).__init__()
@@ -118,3 +118,25 @@ class MyResidualNetwork( nn.Module ):
         x = self.mlp(x)
         return x
     
+
+class MyMLPResidualNetworkWithGloveEmbeddings( nn.Module ):
+    def __init__(self, hidden_dim, output_dim, n_hidden_layers=1, n_special_tokens=2):
+        super(MyMLPResidualNetworkWithGloveEmbeddings, self).__init__()
+        self.n_special_tokens = n_special_tokens
+        glove_vectors = nlp.load_glove_vectors()
+        vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
+        embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
+        self.embedding = embedding
+        self.mlp = ResidualMLP(300, hidden_dim, n_hidden_layers, output_dim)
+        for param in self.embedding.parameters():
+            param.requires_grad = False
+
+    def _pool(self, x):
+        x = torch.mean(x, dim=1)
+        return x
+
+    def forward(self, x):
+        x = self.embedding(x)
+        x = self._pool(x)
+        x = self.mlp(x)
+        return x

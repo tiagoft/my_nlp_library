@@ -14,6 +14,7 @@ def test_with_imdb(model : str = "baseline",
                    embedding_dim : int = 50,
                    hidden_dim : int = 50,
                    n_hidden_layers : int = 1,
+                   n_epochs : int = 100,
                    ):
     """
     Test baseline model with imdb
@@ -26,9 +27,11 @@ def test_with_imdb(model : str = "baseline",
     elif model == "mlp":
         model = nlp.MyNetwork(vocab_size=vocab_size, embedding_dim=embedding_dim, hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers, output_dim=1)
     elif model == "resmlp":
-        model = nlp.MyNetwork(vocab_size=vocab_size, embedding_dim=embedding_dim, hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers, output_dim=1)
+        model = nlp.MyResidualNetwork(vocab_size=vocab_size, embedding_dim=embedding_dim, hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers, output_dim=1)
+    elif model == "glovemlp":
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddings(hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers, output_dim=1)
 
-    model, losses = nlp.train_binary_model(model, dataset_train)
+    model, losses = nlp.train_binary_model(model, dataset_train, n_epochs=n_epochs)
     console.print("Training finished")
     console.print(f"Loss: {losses[-1]}")
     accuracy = nlp.test_binary_model(model, dataset_test)
