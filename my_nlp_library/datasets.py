@@ -22,8 +22,9 @@ class TextDataset(Dataset):
         return x, y
     
 def get_imdb_dataset(target_url : str='https://raw.githubusercontent.com/tiagoft/NLP/refs/heads/main/Aulas/datasets/IMDB%20Dataset.csv',
-                       sentence_length : int = 100):
-    df = pd.read_csv(target_url)
+                       sentence_length : int = 100,
+                       sample_size : int=None):
+    df = pd.read_csv(target_url).sample(sample_size)
     X_train, X_test, y_train, y_test = train_test_split(df['review'], df['sentiment'], test_size=0.2, random_state=42)
     classes = list(set(y_train))
     y_train_bin = torch.tensor([[classes.index(y) for y in y_train]]).T

@@ -9,11 +9,11 @@ console = Console()
 
 
 @app.command('imdb')
-def test_with_imdb():
+def test_with_imdb(sample_size : int = 1000):
     """
     Test baseline model with imdb
     """
-    dataset_train, dataset_test, tokenizer = nlp.get_imdb_dataset()
+    dataset_train, dataset_test, tokenizer = nlp.get_imdb_dataset(sample_size=sample_size)
     vocab_size = tokenizer.vocab_size
     model = nlp.MyClassifier(vocab_size=vocab_size, embedding_dim=50, output_dim=1)
     model, losses = nlp.train_binary_model(model, dataset_train)
