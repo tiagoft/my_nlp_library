@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from sklearn.metrics import accuracy_score
 
-def train_binary_model(model, dataset, n_epochs=100, batch_size=64, lr=1e-1):
+def train_binary_model(model, dataset, n_epochs=100, batch_size=64, lr=1e-3):
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr) # lr is the learning rate - this is our alpha
     loss_fn = nn.BCEWithLogitsLoss() # Binary Cross Entropy from Logits

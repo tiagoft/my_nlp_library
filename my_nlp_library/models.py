@@ -181,8 +181,9 @@ class MyMLPResidualNetworkWithGloveEmbeddingsLSTM( nn.Module ):
             param.requires_grad = False
 
     def _pool(self, x):
-        _, (x, _) = self.sequence_model(x)
-        x = x.reshape(x.shape[1], x.shape[2])
+        x, _ = self.sequence_model(x)
+        x = torch.mean(x, dim=1)
+#        x = x.reshape(x.shape[1], x.shape[2])
         return x
 
     def forward(self, x):
