@@ -140,3 +140,53 @@ class MyMLPResidualNetworkWithGloveEmbeddings( nn.Module ):
         x = self._pool(x)
         x = self.mlp(x)
         return x
+
+
+class MyMLPResidualNetworkWithGloveEmbeddingsRNN( nn.Module ):
+    def __init__(self, hidden_dim, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
+        super(MyMLPResidualNetworkWithGloveEmbeddingsRNN, self).__init__()
+        self.n_special_tokens = n_special_tokens
+        glove_vectors = nlp.load_glove_vectors()
+        vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
+        embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
+        self.sequence_model = nn.RNN(300, hidden_dim, n_layers_rnn, batch_first=True)
+        self.embedding = embedding
+        self.mlp = ResidualMLP(hidden_dim, hidden_dim, n_hidden_layers_mlp, output_dim)
+        for param in self.embedding.parameters():
+            param.requires_grad = False
+
+    def _pool(self, x):
+        _, x = self.sequence_model(x)
+        x = x.reshape(x.shape[1], x.shape[2])
+        return x
+
+    def forward(self, x):
+        x = self.embedding(x)
+        x = self._pool(x)
+        x = self.mlp(x)
+        return x
+
+
+class MyMLPResidualNetworkWithGloveEmbeddingsLSTM( nn.Module ):
+    def __init__(self, hidden_dim, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
+        super(MyMLPResidualNetworkWithGloveEmbeddingsLSTM, self).__init__()
+        self.n_special_tokens = n_special_tokens
+        glove_vectors = nlp.load_glove_vectors()
+        vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
+        embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
+        self.sequence_model = nn.LSTM(300, hidden_dim, n_layers_rnn, batch_first=True)
+        self.embedding = embedding
+        self.mlp = ResidualMLP(hidden_dim, hidden_dim, n_hidden_layers_mlp, output_dim)
+        for param in self.embedding.parameters():
+            param.requires_grad = False
+
+    def _pool(self, x):
+        _, (x, _) = self.sequence_model(x)
+        x = x.reshape(x.shape[1], x.shape[2])
+        return x
+
+    def forward(self, x):
+        x = self.embedding(x)
+        x = self._pool(x)
+        x = self.mlp(x)
+        return x
