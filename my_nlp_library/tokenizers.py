@@ -49,9 +49,13 @@ def detokenize_words(tokens : list,
     return text    
 
 class MyTokenizer:
-    def __init__(self, sentence_length, case_sensitive=False):
+    def __init__(self, sentence_length, case_sensitive=False, vocab=None, inverse_vocab=None):
         self.sentence_length = sentence_length
         self.case_sensitive = case_sensitive
+        self.vocab = vocab
+        self.inverse_vocab = inverse_vocab
+        if vocab is not None:
+            self.vocab_size = len(vocab)
 
     def fit(self, phrases : list, expr : str=r"\b\w+\b"):
         self.vocab, self.inverse_vocab = get_vocabulary(" ".join(phrases),

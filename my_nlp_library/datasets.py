@@ -25,8 +25,9 @@ class TextDataset(Dataset):
         return x, y
     
 def get_imdb_dataset(target_url : str='https://raw.githubusercontent.com/tiagoft/NLP/refs/heads/main/Aulas/datasets/IMDB%20Dataset.csv',
-                       sentence_length : int = 100,
-                       sample_size : int=None):
+                       sentence_length : int = 128,
+                       sample_size : int=None,
+                       glove : bool = False):
     cachedir = Path (os.path.expanduser('~/.my_nlp_library'))
     local_file_path = cachedir / 'IMDB_Dataset.csv'
 
@@ -42,10 +43,18 @@ def get_imdb_dataset(target_url : str='https://raw.githubusercontent.com/tiagoft
     y_train_bin = torch.tensor([[classes.index(y) for y in y_train]]).T
     y_test_bin = torch.tensor([[classes.index(y) for y in y_test]]).T
 
-    tokenizer = nlp.MyTokenizer(sentence_length=sentence_length)
-    tokenizer.fit(X_train)
+    if glove:
+        glove_vectors = nlp.load_glove_vectors()
+        vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
+        tokenizer = nlp.MyTokenizer(sentence_length=sentence_length, case_sensitive=False, vocab=vocab, inverse_vocab=inverse_vocab)
+    else:
+        tokenizer = nlp.MyTokenizer(sentence_length=sentence_length)
+        tokenizer.fit(X_train)
 
     dataset_train = TextDataset(list(X_train), y_train_bin, tokenizer)
     dataset_test = TextDataset(list(X_test), y_test_bin, tokenizer)
 
-    return dataset_train, dataset_test, tokenizer
+    if glove:
+        return dataset_train, dataset_test, tokenizer, glove_vectors
+    else:
+        return dataset_train, dataset_test, tokenizer, None
