@@ -33,8 +33,10 @@ def test_with_imdb(model : str = "baseline",
         model = nlp.MyMLPResidualNetworkWithGloveEmbeddings(hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers_mlp, output_dim=1)
     elif model == "glovernnmlp":
         model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsRNN(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
-    elif model == "glovelstmmlp":
-        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTM(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+    elif model == "glovelstmmlp-mean":
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+    elif model == "glovelstmmlp-c":
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastState(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
 
     model, losses = nlp.train_binary_model(model, dataset_train, n_epochs=n_epochs)
     console.print("Training finished")
