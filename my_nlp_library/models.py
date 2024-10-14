@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import my_nlp_library as nlp
 class MyClassifier( nn.Module ):
     def __init__(self, vocab_size, embedding_dim, output_dim, n_special_tokens=2):
@@ -89,6 +90,7 @@ class ResidualMLP (nn.Module):
         self.hidden_layers = nn.ModuleList()
         for _ in range(n_hidden_layers):
             self.hidden_layers.append(ResidualModule(hidden_dim))
+            self.hidden_layers.append(nn.Dropout(p=0.1))
         self.output_layer= nn.Linear(hidden_dim, output_dim)
         self.relu = nn.ReLU()
 
@@ -229,3 +231,43 @@ class MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastHidden( nn.Module ):
         x = x.reshape(x.shape[1], x.shape[2])
         x = self.mlp(x)
         return x
+    
+
+
+class MyMultiHeadAttention( nn.Module ):
+    def __init__(self, embedding_dim, n_attention_heads):
+        super(MyMultiHeadAttention, self).__init__()
+        self.n_attention_heads = n_attention_heads
+        self.mha = nn.MultiheadAttention(embedding_dim, n_attention_heads, batch_first=True)
+        self.norm = nn.LayerNorm(embedding_dim)
+    
+    def forward(self, v, k, q):
+        res = q
+        x, _ = self.mha(v, k, q)
+        x = x + res
+        x = self.norm(x)
+        return x
+
+class MyResidualNetworkWithMultiHeadAttention( nn.Module ):
+    def __init__(self, vocab_size, embedding_dim, hidden_dim, output_dim, seq_len=500, n_hidden_layers=1, n_attention_heads=8, n_special_tokens=2):
+        super(MyResidualNetworkWithMultiHeadAttention, self).__init__()
+        self.n_special_tokens = n_special_tokens
+        self.positional_encoding = nn.Embedding(seq_len, embedding_dim)
+        self.mha = MyMultiHeadAttention(embedding_dim, n_attention_heads)
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.mlp = ResidualMLP(embedding_dim, hidden_dim, n_hidden_layers, output_dim)
+        
+
+    def _pool(self, x):
+        x = torch.mean(x, dim=1)
+        return x
+
+    def forward(self, x):
+        x = self.embedding(x)
+        pos_encodings = self.positional_encoding(torch.tensor(range(x.shape[1])).to(next(self.parameters()).device))
+        x = x + pos_encodings
+        x = self.mha(x, x, x)
+        x = self._pool(x)
+        x = self.mlp(x)
+        return x
+    

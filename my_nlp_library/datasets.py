@@ -25,7 +25,7 @@ class TextDataset(Dataset):
         return x, y
     
 def get_imdb_dataset(target_url : str='https://raw.githubusercontent.com/tiagoft/NLP/refs/heads/main/Aulas/datasets/IMDB%20Dataset.csv',
-                       sentence_length : int = 500,
+                       sentence_length : int = 128,
                        sample_size : int=None,
                        glove : bool = False):
     cachedir = Path (os.path.expanduser('~/.my_nlp_library'))
