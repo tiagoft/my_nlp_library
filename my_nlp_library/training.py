@@ -6,14 +6,24 @@ import torch.nn as nn
 from sklearn.metrics import accuracy_score
 
 def train_binary_model(model, dataset, n_epochs=100, batch_size=64, lr=1e-3):
+    if torch.cuda.is_available():
+        use_cuda = True
+    else:
+        use_cuda = False
+
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr) # lr is the learning rate - this is our alpha
     loss_fn = nn.BCEWithLogitsLoss() # Binary Cross Entropy from Logits
     # And now, a loop that is equal for everyone:
     losses = []
+    if use_cuda == True:
+        model = model.cuda()
+
     for epoch in tqdm(range(n_epochs)):
         epoch_loss = 0
         for batch in dataloader:
+            if use_cuda == True:
+                batch = [item.cuda() for item in batch]
             X_train_vect, y_train_vect = batch
             optimizer.zero_grad()
             output = model(X_train_vect)
@@ -23,6 +33,8 @@ def train_binary_model(model, dataset, n_epochs=100, batch_size=64, lr=1e-3):
             epoch_loss += loss.item()
 
         losses.append(epoch_loss / len(dataloader))
+    if use_cuda == True:
+        model = model.cpu()
     return model, losses
 
 def test_binary_model(model, dataset, batch_size=64):
