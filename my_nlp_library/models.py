@@ -120,10 +120,9 @@ class MyResidualNetwork( nn.Module ):
     
 
 class MyMLPResidualNetworkWithGloveEmbeddings( nn.Module ):
-    def __init__(self, hidden_dim, output_dim, n_hidden_layers=1, n_special_tokens=2):
+    def __init__(self, hidden_dim, glove_vectors, output_dim, n_hidden_layers=1, n_special_tokens=2):
         super(MyMLPResidualNetworkWithGloveEmbeddings, self).__init__()
         self.n_special_tokens = n_special_tokens
-        glove_vectors = nlp.load_glove_vectors()
         vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
         embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
         self.embedding = embedding
@@ -143,10 +142,9 @@ class MyMLPResidualNetworkWithGloveEmbeddings( nn.Module ):
 
 
 class MyMLPResidualNetworkWithGloveEmbeddingsRNN( nn.Module ):
-    def __init__(self, hidden_dim, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
+    def __init__(self, hidden_dim, glove_vectors, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
         super(MyMLPResidualNetworkWithGloveEmbeddingsRNN, self).__init__()
         self.n_special_tokens = n_special_tokens
-        glove_vectors = nlp.load_glove_vectors()
         vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
         embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
         self.sequence_model = nn.RNN(300, hidden_dim, n_layers_rnn, batch_first=True)
@@ -168,10 +166,9 @@ class MyMLPResidualNetworkWithGloveEmbeddingsRNN( nn.Module ):
 
 
 class MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling( nn.Module ):
-    def __init__(self, hidden_dim, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
+    def __init__(self, hidden_dim, glove_vectors, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
         super(MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling, self).__init__()
         self.n_special_tokens = n_special_tokens
-        glove_vectors = nlp.load_glove_vectors()
         vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
         embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
         self.sequence_model = nn.LSTM(300, hidden_dim, n_layers_rnn, batch_first=True)
@@ -193,10 +190,9 @@ class MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling( nn.Module ):
         return x
 
 class MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastState( nn.Module ):
-    def __init__(self, hidden_dim, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
+    def __init__(self, hidden_dim, glove_vectors, output_dim, n_layers_rnn=1, n_hidden_layers_mlp=1, n_special_tokens=2):
         super(MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastState, self).__init__()
         self.n_special_tokens = n_special_tokens
-        glove_vectors = nlp.load_glove_vectors()
         vocab, inverse_vocab = nlp.get_vocabulary_from_glove(glove_vectors)
         embedding = nlp.make_embedding_layer_from_glove(glove_vectors, vocab, inverse_vocab, 300)
         self.sequence_model = nn.LSTM(300, hidden_dim, n_layers_rnn, batch_first=True)

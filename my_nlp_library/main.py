@@ -20,7 +20,11 @@ def test_with_imdb(model : str = "baseline",
     """
     Test baseline model with imdb
     """
-    dataset_train, dataset_test, tokenizer = nlp.get_imdb_dataset(sample_size=sample_size)
+    if 'glove' in model:
+        use_glove = True
+    else:
+        use_glove = False
+    dataset_train, dataset_test, tokenizer, glove_vectors = nlp.get_imdb_dataset(sample_size=sample_size, glove=use_glove)
     vocab_size = tokenizer.vocab_size
 
     if model == "baseline":
@@ -30,13 +34,13 @@ def test_with_imdb(model : str = "baseline",
     elif model == "resmlp":
         model = nlp.MyResidualNetwork(vocab_size=vocab_size, embedding_dim=embedding_dim, hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers_mlp, output_dim=1)
     elif model == "glovemlp":
-        model = nlp.MyMLPResidualNetworkWithGloveEmbeddings(hidden_dim=hidden_dim, n_hidden_layers=n_hidden_layers_mlp, output_dim=1)
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddings(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_hidden_layers=n_hidden_layers_mlp, output_dim=1)
     elif model == "glovernnmlp":
-        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsRNN(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsRNN(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
     elif model == "glovelstmmlp-mean":
-        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
     elif model == "glovelstmmlp-c":
-        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastState(hidden_dim=hidden_dim, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastState(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
 
     model, losses = nlp.train_binary_model(model, dataset_train, n_epochs=n_epochs)
     console.print("Training finished")
