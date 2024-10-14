@@ -41,6 +41,9 @@ def test_with_imdb(model : str = "baseline",
         model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMMeanPooling(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
     elif model == "glovelstmmlp-c":
         model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastState(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+    elif model == "glovelstmmlp-h":
+        model = nlp.MyMLPResidualNetworkWithGloveEmbeddingsLSTMLastHidden(hidden_dim=hidden_dim, glove_vectors=glove_vectors, n_layers_rnn=n_layers_rnn, n_hidden_layers_mlp=n_hidden_layers_mlp, output_dim=1)
+
 
     model, losses = nlp.train_binary_model(model, dataset_train, n_epochs=n_epochs)
     console.print("Training finished")
