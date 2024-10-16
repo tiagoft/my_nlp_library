@@ -1,6 +1,7 @@
 from .models import *
 from .tokenizers import *
 from .glove import *
+from .utils import *
 from .datasets import *
 from .training import *
 
