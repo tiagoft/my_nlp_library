@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import my_nlp_library as nlp
+import my_nlp_library as nlp 
 class MyClassifier( nn.Module ):
     def __init__(self, vocab_size, embedding_dim, output_dim, n_special_tokens=2):
         super(MyClassifier, self).__init__()
